@@ -1,0 +1,12 @@
+---
+title: "Miniproject 3"
+author: "Khulood, Zoya, Sameera"
+date: "April 8, 2019"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+Hello
