@@ -35,8 +35,13 @@ mac_forest <- macleish_layers %>%
   mutate(computed_area = st_area(geometry)) %>% 
   arrange(desc(computed_area))
 
-head(mac_forest)
 ```
+
+```{r}
+mac_forest %>% 
+    rename("name" = Sheet1__Na)
+```
+
 
 ```{r}
 stream_buffer <- macleish_layers %>% 
@@ -48,6 +53,96 @@ leaflet() %>%
   addPolylines(data = pluck(macleish_layers, "streams"), 
                weight = 1, color = "black") %>% 
   addPolylines(data = stream_buffer)
+```
+
+```{r}
+buildings_buffer <- macleish_layers %>% 
+  pluck("buildings") %>%
+  st_transform(4326)
+
+leaflet() %>% 
+  addTiles() %>% 
+  addPolylines(data = pluck(macleish_layers, "buildings"), 
+               weight = 1, color = "brown") %>% 
+  addPolylines(data = buildings_buffer)
+```
+
+```{r}
+trails_buffer <- macleish_layers %>% 
+  pluck("trails") %>%
+  st_transform(4326)
+
+leaflet() %>% 
+  addTiles() %>% 
+  addPolylines(data = pluck(macleish_layers, "trails"), 
+               weight = 1, label = ~name, color = ~color) %>% 
+  addPolylines(data = trails_buffer)
+```
+
+
+```{r}
+forest_pal <- colorFactor("Greens", macleish_layers[["forests"]]$Sheet1__Na)
+#streams_col <- colorFactor("Reds", macleish_layers[["streams"]]$Id) 
+#buildings_col <- colorFactor("Reds", macleish_layers[["buildings"]]$geometry)
+```
+
+```{r}
+my_points <- data.frame(lat = 42.452155, lon = -72.683100)
+my_points
+```
+
+```{r}
+my_sf <- my_points %>% 
+  st_as_sf(coords = c("lat", "lon"))
+```
+
+```{r}
+leaflet() %>% 
+  addTiles() %>% 
+  addMarkers(data =my_sf, popup = ~geometry)
+```
+
+```{r}
+macleish_layers %>%
+  leaflet() %>%
+  addTiles() %>%
+  #addPolylines(data = macleish_layers[["trails"]], weight = 1, popup = ~name) %>%
+  addPolygons(data = macleish_layers[["boundary"]], weight = 2, fillOpacity = 0.01) %>%
+  addPolygons(data = macleish_layers[["forests"]], weight = 4, color = ~forest_pal, popup = ~Sheet1__Na) %>%
+  #addPolylines(data = macleish_layers[["streams"]], weight = 3, color = ~streams_col) %>%
+  addPolylines(data = pluck(macleish_layers, "streams"), 
+               weight = 2, color = "black") %>% 
+  addPolygons(data = pluck(macleish_layers, "buildings"), 
+               weight = 2, color = "dark red") %>% 
+  addPolylines(data = macleish_layers[["forests"]],
+               weight = 1, popup = ~Sheet1__Na) %>% 
+  addPolylines(data = pluck(macleish_layers, "trails"), 
+               weight = 1, color = ~color) %>% 
+  #addMarkers(data =my_sf, popup = ~geometry) %>% 
+  #addPolygons(data = macleish_layers[["buildings"]], weight = 1, popup = ~name) %>% 
+  addPolygons(data = macleish_layers[["research"]], weight = 1)
+  #addPolygons(data = macleish_layers[["landmarks"]], weight = 1, popup = ~Label)
+```
+
+```{r}
+macleish_layers %>%
+  leaflet() %>%
+  addTiles() %>%
+  addPolygons(data = macleish_layers[["boundary"]], weight = 2, fillOpacity = 0) %>%
+  addPolygons(data = macleish_layers[["forests"]], weight = 1, color = ~forest_pal, popup = ~Sheet1__Na) %>%
+  #addPolylines(data = macleish_layers[["streams"]], weight = 3, color = ~streams_col) %>%
+  addPolylines(data = pluck(macleish_layers, "streams"), 
+               weight = 2, color = "black") %>% 
+  addPolygons(data = pluck(macleish_layers, "buildings"), 
+               weight = 2, color = "dark red") %>% 
+  addPolylines(data = macleish_layers[["forests"]],
+               weight = 1, popup = ~Sheet1__Na) %>% 
+  addPolylines(data = pluck(macleish_layers, "trails"), 
+               weight = 4, color = ~color) %>% 
+  #addMarkers(data =my_sf, popup = ~geometry) %>% 
+  #addPolygons(data = macleish_layers[["buildings"]], weight = 1, popup = ~name) %>% 
+  addPolygons(data = macleish_layers[["research"]], weight = 1)
+  #addPolygons(data = macleish_layers[["landmarks"]], weight = 1, popup = ~Label)
 ```
 
 ```{r}
@@ -67,14 +162,12 @@ leaflet() %>%
 leaflet() %>% 
   addTiles() %>% 
   addPolygons(data = macleish_layers[["forests"]],
-               weight = 1, popup = ~name) %>% 
+               weight = 1, popup = ~Sheet1__Na) %>% 
   addPolylines(data = forests_buffer) %>% 
   addPolylines(data = pluck(macleish_layers, "streams"), 
                weight = 1, color = "red") %>% 
   addPolylines(data = stream_buffer)
 ```
-
-
 
 
 
