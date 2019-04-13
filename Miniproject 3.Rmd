@@ -1,5 +1,5 @@
 ---
-title: "Miniproject 3"
+title: "Mini project 3"
 author: "Khulood, Zoya, Sameera"
 date: "April 8, 2019"
 output: html_document
