@@ -10,10 +10,70 @@ knitr::opts_chunk$set(echo = TRUE)
 ```
 
 
-
 ```{r}
 library(macleish)
+library(tidyverse)
+library(tidycensus)
+library(sf)
+library(ggplot2)
+library(leaflet)
+library(dplyr)
 ```
+
+```{r}
+#install.packages("lwgeom")
+macleish_layers %>% 
+  pluck("trails")
+```
+
+```{r}
+boundaries_aea <- macleish_layers %>% 
+  pluck("boundary")
+
+mac_forest <- macleish_layers %>% 
+  pluck("forests") %>% 
+  mutate(computed_area = st_area(geometry)) %>% 
+  arrange(desc(computed_area))
+
+head(mac_forest)
+```
+
+```{r}
+stream_buffer <- macleish_layers %>% 
+  pluck("streams") %>%
+  st_transform(4326)
+
+leaflet() %>% 
+  addTiles() %>% 
+  addPolylines(data = pluck(macleish_layers, "streams"), 
+               weight = 1, color = "black") %>% 
+  addPolylines(data = stream_buffer)
+```
+
+```{r}
+forests_buffer <- macleish_layers %>% 
+  pluck("forests") %>%
+  st_transform(4326)
+
+leaflet() %>% 
+  addTiles() %>% 
+  addPolylines(data = pluck(macleish_layers, "forests"), 
+               weight = 1, color = "black") %>% 
+  addPolylines(data = forests_buffer)
+```
+
+
+```{r}
+leaflet() %>% 
+  addTiles() %>% 
+  addPolygons(data = macleish_layers[["forests"]],
+               weight = 1, popup = ~name) %>% 
+  addPolylines(data = forests_buffer) %>% 
+  addPolylines(data = pluck(macleish_layers, "streams"), 
+               weight = 1, color = "red") %>% 
+  addPolylines(data = stream_buffer)
+```
+
 
 
 
